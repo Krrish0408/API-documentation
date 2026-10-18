@@ -1,0 +1,42 @@
+# Environment & Secrets
+.env
+.env*.local
+*.ses
+
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Dependency & Model Caches
+.uv_cache/
+.uv_python/
+.hf_cache/
+models/
+data/
+uploads/
+
+# Node / Next.js
+node_modules/
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+frontend-next/build/
+.next/
+
+# IDE & OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Personal / duplicate files
+AWS grades.pdf
+* (1).*

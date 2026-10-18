@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocMind AI — API Documentation & Developer Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a10;--surface:#12121c;--surface2:#1a1a28;--surface3:#222234;--border:#2e2e44;
+  --accent:#7c6dfa;--accent-hover:#6b5be8;--accent2:#4ecca3;--text:#e8e8f2;--muted:#72728c;
+  --danger:#ff5f57;--warning:#f5a623;--success:#4ecca3;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --glow-admin:rgba(124,109,250,0.4);
+  --glow-dev:rgba(78,204,163,0.4);
+  --glow-viewer:rgba(56,189,248,0.4);
+}
+body.light{
+  --bg:#f5f6fa;--surface:#ffffff;--surface2:#edeef6;--surface3:#e2e4f0;--border:#d4d6e6;
+  --text:#1a1a2e;--muted:#7c7e96;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;overflow-x:hidden}
+
+/* HEADER */
+header{padding:10px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+header h1{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--text) 60%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.version-badge{font-family:var(--mono);font-size:.65rem;color:var(--accent2);background:rgba(78,204,163,.1);padding:3px 9px;border-radius:20px;border:1px solid rgba(78,204,163,.2)}
+.theme-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 11px;font-size:.78rem;cursor:pointer;transition:all .2s}
+.theme-btn:hover{border-color:var(--accent)}
+.stream-toggle-wrap{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+.toggle-switch{position:relative;display:inline-block;width:34px;height:18px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:18px;transition:.3s}
+.toggle-slider::before{position:absolute;content:"";height:12px;width:12px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+input:checked+.toggle-slider{background:var(--accent)}
+input:checked+.toggle-slider::before{transform:translateX(16px)}
+
+/* USER PROFILE IN HEADER */
+.user-profile-widget{display:flex;align-items:center;gap:8px;position:relative}
+.auth-signin-btn{background:linear-gradient(135deg,var(--accent),#5a48e0);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:var(--sans);font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;box-shadow:0 2px 10px rgba(124,109,250,0.3)}
+.auth-signin-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(124,109,250,0.4)}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:24px;cursor:pointer;transition:all .2s}
+.user-pill:hover{border-color:var(--accent)}
+.user-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:bold;background:var(--accent);color:#fff}
+.user-info{display:flex;flex-direction:column;line-height:1.1}
+.user-name{font-size:.72rem;font-weight:700;color:var(--text)}
+.user-role-badge{font-family:var(--mono);font-size:.58rem;padding:2px 6px;border-radius:12px;font-weight:600;display:inline-block;letter-spacing:.05em}
+.role-ADMIN{background:rgba(124,109,250,0.18);color:#a59bfb;border:1px solid rgba(124,109,250,0.4)}
+.role-DEVELOPER{background:rgba(78,204,163,0.18);color:#5eead4;border:1px solid rgba(78,204,163,0.4)}
+.role-VIEWER{background:rgba(56,189,248,0.18);color:#7dd3fc;border:1px solid rgba(56,189,248,0.4)}
+.user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;width:240px;box-shadow:0 10px 30px rgba(0,0,0,0.4);display:none;z-index:200}
+.user-dropdown.show{display:block}
+.user-dropdown-header{border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px}
+.user-dropdown-email{font-family:var(--mono);font-size:.65rem;color:var(--muted);word-break:break-all}
+.user-perms-list{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.user-perms-list span{display:flex;align-items:center;gap:5px}
+.user-perms-list .perm-ok{color:var(--success)}
+.user-perms-list .perm-no{color:var(--danger);opacity:.6}
+.signout-btn{width:100%;background:rgba(255,95,87,0.1);color:var(--danger);border:1px solid rgba(255,95,87,0.25);border-radius:7px;padding:6px;font-size:.72rem;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.signout-btn:hover{background:rgba(255,95,87,0.2);border-color:var(--danger)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:300px 1fr;flex:1;height:calc(100vh - 51px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:10}
+.tab-btn{flex:1;padding:10px 2px;font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.section{padding:16px;border-bottom:1px solid var(--border)}
+.section-label{font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.section-label::before{content:'';width:4px;height:4px;background:var(--accent);border-radius:50%}
+
+/* PERMISSION LOCKED NOTICE */
+.rbac-lock-banner{background:rgba(245,166,35,0.08);border:1px dashed rgba(245,166,35,0.3);border-radius:8px;padding:10px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;font-size:.7rem;line-height:1.4;color:var(--warning)}
+.rbac-lock-banner strong{display:block;font-size:.73rem;color:var(--text);margin-bottom:2px}
+
+/* DROPZONE */
+.dropzone{border:1.5px dashed var(--border);border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(124,109,250,.06)}
+.dropzone.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.dropzone input{display:none}
+.dropzone p{font-size:.72rem;color:var(--muted);line-height:1.5}
+.dropzone p strong{color:var(--text)}
+.file-badges{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.file-badge{font-family:var(--mono);font-size:.6rem;color:var(--accent2);background:rgba(78,204,163,.1);padding:2px 7px;border-radius:20px;border:1px solid rgba(78,204,163,.2)}
+
+/* INPUTS */
+.input-group{margin-top:10px}
+.input-group label{display:block;font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-bottom:5px}
+input[type="text"],input[type="password"],input[type="email"],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-family:var(--mono);font-size:.75rem;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{cursor:pointer}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:70px;line-height:1.5}
+
+/* BUTTONS */
+.btn{width:100%;padding:9px 14px;border:none;border-radius:8px;font-family:var(--sans);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:rgba(255,95,87,.1);color:var(--danger);border:1px solid rgba(255,95,87,.3)}
+.btn-danger:hover:not(:disabled){background:rgba(255,95,87,.2)}
+.btn-success{background:rgba(78,204,163,.15);color:var(--success);border:1px solid rgba(78,204,163,.3)}
+.btn-success:hover:not(:disabled){background:rgba(78,204,163,.25)}
+
+.status-bar{font-family:var(--mono);font-size:.68rem;padding:6px 9px;border-radius:7px;margin-top:8px;display:none}
+.status-bar.success{background:rgba(78,204,163,.1);color:var(--success);border:1px solid rgba(78,204,163,.2)}
+.status-bar.error{background:rgba(255,95,87,.1);color:var(--danger);border:1px solid rgba(255,95,87,.2)}
+.status-bar.loading{background:rgba(124,109,250,.1);color:var(--accent);border:1px solid rgba(124,109,250,.2)}
+
+/* HISTORY */
+.history-list{display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto}
+.history-item{font-family:var(--mono);font-size:.65rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 9px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .15s}
+.history-item:hover{color:var(--accent);border-color:var(--accent)}
+.history-empty{font-size:.7rem;color:var(--muted);text-align:center;padding:10px 0}
+
+/* TESTER */
+.method-select{font-family:var(--mono);font-size:.72rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);width:100%;margin-bottom:8px;outline:none;cursor:pointer}
+.test-result-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;font-family:var(--mono);font-size:.72rem;max-height:320px;overflow-y:auto;word-break:break-all;white-space:pre-wrap;color:var(--text);display:none}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+.chat-header{padding:10px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface);flex-wrap:wrap}
+.api-indicator{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.api-indicator span{color:var(--accent2);font-weight:600}
+.lang-filter{display:flex;gap:5px;flex-wrap:wrap}
+.lang-btn{font-family:var(--mono);font-size:.6rem;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .15s}
+.lang-btn.active{background:rgba(124,109,250,.15);border-color:var(--accent);color:var(--accent)}
+
+.compare-banner{display:none;padding:7px 22px;background:rgba(124,109,250,.08);border-bottom:1px solid rgba(124,109,250,.2);font-family:var(--mono);font-size:.68rem;color:var(--accent);align-items:center;gap:8px}
+.compare-banner.show{display:flex}
+.compare-close{margin-left:auto;cursor:pointer;opacity:.6}
+.compare-close:hover{opacity:1}
+
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.msg{display:flex;gap:10px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.avatar{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+.avatar.ai{background:rgba(124,109,250,.2);border:1px solid rgba(124,109,250,.3)}
+.avatar.usr{background:rgba(78,204,163,.2);border:1px solid rgba(78,204,163,.3)}
+.bubble{max-width:78%;padding:11px 14px;border-radius:12px;font-size:.82rem;line-height:1.65;position:relative}
+.msg.ai .bubble{background:var(--surface);border:1px solid var(--border);border-top-left-radius:4px;color:var(--text)}
+.msg.user .bubble{background:rgba(124,109,250,.15);border:1px solid rgba(124,109,250,.25);border-top-right-radius:4px;text-align:right}
+.bubble pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;margin:7px 0;overflow-x:auto;font-family:var(--mono);font-size:.7rem;line-height:1.7;white-space:pre-wrap;text-align:left}
+.bubble code{font-family:var(--mono);font-size:.76em;background:rgba(124,109,250,.15);padding:2px 5px;border-radius:4px}
+.bubble strong{color:var(--accent2)}
+.code-block-wrapper{position:relative;margin:7px 0}
+.lang-tag{font-family:var(--mono);font-size:.6rem;color:var(--accent);margin-bottom:2px;display:block}
+.copy-code-btn{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:.58rem;padding:2px 7px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s}
+.copy-code-btn:hover{color:var(--accent);border-color:var(--accent)}
+.bubble-actions{display:flex;gap:5px;margin-top:8px;padding-top:7px;border-top:1px solid var(--border)}
+.action-btn{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s}
+.action-btn:hover{color:var(--text);border-color:var(--muted)}
+.action-btn.liked{color:var(--success);border-color:var(--success);background:rgba(78,204,163,.1)}
+.action-btn.disliked{color:var(--danger);border-color:var(--danger);background:rgba(255,95,87,.1)}
+.tokens-badge{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:4px;display:block}
+
+/* COMPARE DISPLAY */
+.compare-section{margin:8px 0}
+.compare-section-title{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent);padding:5px 10px;background:rgba(124,109,250,.1);border-radius:6px;border-left:3px solid var(--accent);margin-bottom:6px}
+.compare-divider{border:none;border-top:1px dashed var(--border);margin:14px 0}
+
+/* TYPING */
+.typing-wrap{padding:0 22px 0 52px}
+.typing-indicator{display:none;gap:4px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;border-top-left-radius:4px;width:fit-content}
+.typing-indicator.show{display:flex}
+.dot{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* INPUT BAR */
+.input-bar{padding:10px 22px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:center;background:var(--surface);position:relative}
+.input-wrap{flex:1;position:relative}
+.input-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-family:var(--sans);font-size:.82rem;outline:none;transition:border-color .2s}
+.input-wrap input:focus{border-color:var(--accent)}
+
+/* SUGGESTIONS */
+#suggestions-box{position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 -4px 20px rgba(0,0,0,.3);overflow:hidden;z-index:50;display:none}
+.suggestion-item{padding:8px 13px;font-family:var(--mono);font-size:.7rem;color:var(--muted);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.suggestion-item:last-child{border-bottom:none}
+.suggestion-item:hover{background:var(--surface2);color:var(--text)}
+.suggestion-icon{opacity:.5;font-size:.75rem}
+
+.mic-btn,.send-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;width:42px;height:42px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;font-size:1rem}
+.send-btn{background:var(--accent);border:none}
+.send-btn:hover{background:#6a5cf0;transform:translateY(-1px)}
+.send-btn svg{width:15px;height:15px;fill:white}
+.mic-btn:hover{border-color:var(--accent)}
+.mic-btn.recording{background:rgba(255,95,87,.2);border-color:var(--danger);animation:mic-pulse 1s infinite}
+@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,95,87,.4)}50%{box-shadow:0 0 0 6px rgba(255,95,87,0)}}
+
+/* QUICK CHIPS */
+.quick-chips{margin-top:16px;text-align:center}
+.chips-label{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em}
+.chips-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:600px}
+.chip{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:7px 14px;font-size:.78rem;font-family:var(--sans);cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,109,250,.08);transform:translateY(-1px)}
+
+/* EMPTY STATE */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);text-align:center;padding:40px}
+.empty-state .icon{font-size:2.5rem;opacity:.4}
+.empty-state p{font-size:.8rem;line-height:1.6;max-width:320px}
+.empty-state strong{color:var(--text)}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:#1e1e2e;color:#cdd6f4;border:1px solid var(--border);padding:10px 18px;border-radius:10px;font-size:.78rem;font-family:var(--mono);box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
+
+.spinner{display:inline-block;width:10px;height:10px;border:2px solid rgba(124,109,250,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ─── AUTH MODAL ──────────────────────────────────────────────────────────── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(5,5,10,0.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:999;animation:fadeIn .2s ease}
+.modal-backdrop.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:92%;max-width:440px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.6);position:relative;animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.auth-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;transition:color .2s}
+.auth-close-btn:hover{color:var(--text)}
+.auth-header-title{font-size:1.2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.auth-header-desc{font-size:.76rem;color:var(--muted);margin-bottom:18px}
+
+.demo-presets-title{font-family:var(--mono);font-size:.62rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.demo-presets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.demo-preset-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.demo-preset-btn:hover{border-color:var(--accent);transform:translateY(-1px);background:rgba(124,109,250,0.08)}
+.demo-preset-btn .icon{font-size:1.1rem}
+.demo-preset-btn .title{font-size:.72rem;font-weight:700;color:var(--text)}
+.demo-preset-btn .subtitle{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+
+.auth-tabs-nav{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.auth-tab-nav-btn{flex:1;background:none;border:none;padding:8px;font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.auth-tab-nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.auth-tab-content{display:none}
+.auth-tab-content.active{display:block}
+
+.auth-form-group{margin-bottom:12px}
+.auth-form-group label{display:block;font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:5px;letter-spacing:.05em}
+.auth-input-wrapper{position:relative}
+.auth-input-wrapper input{padding-right:34px}
+.auth-toggle-pwd{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:.85rem;color:var(--muted);background:none;border:none}
+.auth-error-msg{background:rgba(255,95,87,0.12);color:var(--danger);border:1px solid rgba(255,95,87,0.3);border-radius:8px;padding:8px 12px;font-size:.72rem;font-family:var(--mono);margin-bottom:12px;display:none}
+.auth-success-msg{background:rgba(78,204,163,0.12);color:var(--success);border:1px solid rgba(78,204,163,0.3);border-radius:8px;padding:8px 12px;font-size:.72rem;font-family:var(--mono);margin-bottom:12px;display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo-dot"></div>
+    <h1>DocMind AI</h1>
+  </div>
+  <div class="header-right">
+    <span class="version-badge">v3.0 · RBAC Auth</span>
+    <div class="stream-toggle-wrap">
+      <span>⚡Stream</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="streamToggle" checked/>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()">🌙 Theme</button>
+    
+    <!-- User Profile & Auth Widget in Header -->
+    <div class="user-profile-widget" id="userProfileWidget">
+      <button class="auth-signin-btn" id="headerSignInBtn" onclick="openAuthModal('login')">
+        <span>🔐</span> Sign In
+      </button>
+      <div class="user-pill" id="headerUserPill" style="display:none" onclick="toggleUserDropdown()">
+        <div class="user-avatar" id="headerUserAvatar">A</div>
+        <div class="user-info">
+          <span class="user-name" id="headerUserName">Admin User</span>
+          <span class="user-role-badge role-ADMIN" id="headerRoleBadge">👑 ADMIN</span>
+        </div>
+        <span style="font-size:0.7rem;color:var(--muted)">▾</span>
+      </div>
+      
+      <!-- Dropdown Menu -->
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+          <div style="font-weight:700;font-size:0.8rem" id="dropUserName">Admin User</div>
+          <div class="user-dropdown-email" id="dropUserEmail">admin@docmind.ai</div>
+        </div>
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-bottom:4px">PERMISSIONS:</div>
+        <div class="user-perms-list" id="dropUserPerms">
+          <span><span class="perm-ok">✓</span> AI QnA & Chat</span>
+          <span><span class="perm-ok">✓</span> SDK & Readme Studio</span>
+          <span><span class="perm-ok">✓</span> Live API Playground</span>
+          <span><span class="perm-ok">✓</span> Ingestion & Delete APIs</span>
+        </div>
+        <button class="signout-btn" onclick="logoutUser()">🚪 &nbsp;Sign Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-tabs">
+      <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload</button>
+      <button class="tab-btn" onclick="switchTab('apis')">🔌 APIs</button>
+      <button class="tab-btn" onclick="switchTab('generator')">⚡ SDK/Docs</button>
+      <button class="tab-btn" onclick="switchTab('tester')">🧪 Tester</button>
+      <button class="tab-btn" onclick="switchTab('history')">🕐 History</button>
+    </div>
+
+    <!-- UPLOAD TAB -->
+    <div class="tab-panel active" id="tab-upload">
+      <div class="section">
+        <div class="section-label">Upload Documentation</div>
+        
+        <div class="rbac-lock-banner" id="uploadRbacNotice" style="display:none">
+          <span>👑</span>
+          <div>
+            <strong>Admin Permission Required</strong>
+            Only Administrators can upload and index new API documentation into ChromaDB.
+          </div>
+        </div>
+
+        <div class="dropzone" id="dropzone"
+             onclick="document.getElementById('fileInput').click()"
+             ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <input type="file" id="fileInput" multiple accept=".pdf,.md,.markdown,.txt,.yaml,.yml,.json" onchange="onFilesSelected(this)"/>
+          <div style="font-size:1.5rem;margin-bottom:5px">📄</div>
+          <p><strong>Click or drag files here</strong><br/>PDF, YAML, JSON, Markdown, TXT<br/><small>Multiple files supported</small></p>
+          <div class="file-badges" id="fileBadges"></div>
+        </div>
+        <div class="input-group">
+          <label>API NAME</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="apiNameInput" placeholder="e.g. stripe-api, github-api"/>
+            <button type="button" class="btn btn-secondary" id="autoDetectBtn" style="width:auto;margin-top:0;padding:0 10px;font-size:0.7rem;white-space:nowrap;" onclick="autoDetectName()">🔍 Auto</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="uploadBtn" onclick="uploadFiles()">
+          <span id="uploadBtnText">↑ Upload & Process</span>
+        </button>
+        <div class="status-bar" id="uploadStatus"></div>
+      </div>
+    </div>
+
+    <!-- APIS TAB -->
+    <div class="tab-panel" id="tab-apis">
+      <div class="section">
+        <div class="section-label">Select API</div>
+        <div class="input-group">
+          <label>ACTIVE API</label>
+          <select id="apiSelect" onchange="onApiChange()">
+            <option value="">-- Select an API --</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" onclick="loadApis()">⟳ &nbsp;Refresh List</button>
+        <button class="btn btn-danger" id="deleteApiBtn" onclick="deleteSelectedApi()" style="margin-top:6px">🗑️ &nbsp;Delete Selected API</button>
+      </div>
+      <div class="section">
+        <div class="section-label">Compare APIs</div>
+        <div class="input-group">
+          <label>API 1</label>
+          <select id="compareApi1"><option value="">-- Select API 1 --</option></select>
+        </div>
+        <div class="input-group" style="margin-top:8px">
+          <label>API 2</label>
+          <select id="compareApi2"><option value="">-- Select API 2 --</option></select>
+        </div>
+        <button class="btn btn-secondary" id="compareModeBtn" onclick="startCompareMode()">⚖️ &nbsp;Compare Mode</button>
+      </div>
+      <div class="section">
+        <div class="section-label">Export</div>
+        <button class="btn btn-success" onclick="exportPDF()">📕 &nbsp;Export as PDF</button>
+        <button class="btn btn-secondary" onclick="exportChat('md')">📄 &nbsp;Export as Markdown</button>
+        <button class="btn btn-secondary" onclick="exportChat('txt')">📝 &nbsp;Export as Text</button>
+        <button class="btn btn-danger" onclick="clearChat()">🗑️ &nbsp;Clear Chat</button>
+      </div>
+    </div>
+
+    <!-- GENERATOR TAB -->
+    <div class="tab-panel" id="tab-generator">
+      <div class="section">
+        <div class="section-label">SDK Generator</div>
+        <div class="rbac-lock-banner" id="genRbacNotice" style="display:none">
+          <span>💻</span>
+          <div>
+            <strong>Developer / Admin Required</strong>
+            Viewers cannot generate SDK code or documentation.
+          </div>
+        </div>
+        <div class="input-group">
+          <label>LANGUAGE</label>
+          <select id="genLang">
+            <option value="all">All Languages (Python, JS, cURL)</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript / Node.js</option>
+            <option value="java">Java</option>
+            <option value="curl">cURL Commands</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="genSdkBtn" onclick="generateSdk()">⚡ &nbsp;Generate SDK</button>
+        <button class="btn btn-secondary" id="downloadSdkBtn" onclick="downloadSdk()" style="display:none;margin-top:6px">💾 &nbsp;Download SDK File</button>
+      </div>
+      <div class="section">
+        <div class="section-label">Documentation Generator</div>
+        <button class="btn btn-primary" id="genReadmeBtn" onclick="generateReadme()">📖 &nbsp;Generate README.md</button>
+        <button class="btn btn-secondary" id="downloadReadmeBtn" onclick="downloadReadme()" style="display:none;margin-top:6px">💾 &nbsp;Download README.md</button>
+      </div>
+      <div class="section">
+        <div class="section-label">Generated Output</div>
+        <div class="test-result-box" id="genOutput" style="display:none;max-height:280px;white-space:pre-wrap;"></div>
+      </div>
+    </div>
+
+    <!-- TESTER TAB -->
+    <div class="tab-panel" id="tab-tester">
+      <div class="section">
+        <div class="section-label">API Tester</div>
+        <div class="rbac-lock-banner" id="testerRbacNotice" style="display:none">
+          <span>🧪</span>
+          <div>
+            <strong>Developer / Admin Required</strong>
+            Viewers cannot execute live HTTP test requests.
+          </div>
+        </div>
+        <div class="input-group">
+          <label>METHOD</label>
+          <select class="method-select" id="testMethod">
+            <option>GET</option><option>POST</option><option>PUT</option>
+            <option>PATCH</option><option>DELETE</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>URL</label>
+          <input type="text" id="testUrl" placeholder="https://api.example.com/endpoint"/>
+        </div>
+        <div class="input-group">
+          <label>HEADERS (JSON)</label>
+          <textarea id="testHeaders" placeholder='{"Authorization": "Bearer token"}'></textarea>
+        </div>
+        <div class="input-group">
+          <label>BODY (JSON)</label>
+          <textarea id="testBody" placeholder='{"key": "value"}'></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="runTest()" id="testBtn">▶ &nbsp;Run Request</button>
+        <div class="test-result-box" id="testResult"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab-panel" id="tab-history">
+      <div class="section">
+        <div class="section-label">Search History</div>
+        <div class="history-list" id="historyList">
+          <p class="history-empty">No history yet</p>
+        </div>
+        <button class="btn btn-danger" onclick="clearHistory()" style="margin-top:10px">🗑️ Clear History</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CHAT -->
+  <main class="main">
+    <div class="chat-header">
+      <div class="api-indicator">Chatting with: <span id="activeApiLabel">none selected</span></div>
+      <div class="lang-filter" style="margin-left:auto">
+        <button class="lang-btn active" onclick="setLangFilter('all',this)">All</button>
+        <button class="lang-btn" onclick="setLangFilter('python',this)">Python</button>
+        <button class="lang-btn" onclick="setLangFilter('javascript',this)">JS</button>
+        <button class="lang-btn" onclick="setLangFilter('java',this)">Java</button>
+        <button class="lang-btn" onclick="setLangFilter('curl',this)">cURL</button>
+      </div>
+    </div>
+
+    <div class="compare-banner" id="compareBanner">
+      ⚖️ Compare Mode: <strong id="compareLabel"></strong>
+      <span class="compare-close" onclick="stopCompareMode()">✕ Exit</span>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">⚡</div>
+        <p><strong>Upload or select an API doc</strong> on the left to start asking technical questions, generating SDKs, or testing endpoints!</p>
+        <div class="quick-chips" id="quickChips">
+          <div class="chips-label">Try asking:</div>
+          <div class="chips-row">
+            <button class="chip" onclick="useChip('How do I authenticate?')">🔐 How do I authenticate?</button>
+            <button class="chip" onclick="useChip('What endpoints are available?')">📡 Available endpoints?</button>
+            <button class="chip" onclick="useChip('Show me a Python example')">🐍 Python example</button>
+            <button class="chip" onclick="useChip('What are the rate limits?')">⏱️ Rate limits?</button>
+            <button class="chip" onclick="useChip('How to handle errors?')">❌ Error handling?</button>
+            <button class="chip" onclick="useChip('Show me a JavaScript example')">🟨 JS example</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-wrap">
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-wrap">
+        <input type="text" id="questionInput"
+               placeholder="Ask anything about the active API docs..."
+               onkeydown="onInputKey(event)" oninput="onInputChange(this.value)"/>
+        <div id="suggestions-box"></div>
+      </div>
+      <button class="mic-btn" id="micBtn" title="🎤 Voice Input" onclick="toggleVoice()">🎤</button>
+      <button class="send-btn" id="sendBtn" onclick="sendQuestion()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </main>
+</div>
+
+<!-- ─── AUTHENTICATION MODAL ────────────────────────────────────────────────── -->
+<div class="modal-backdrop" id="authModal">
+  <div class="auth-card">
+    <button class="auth-close-btn" onclick="closeAuthModal()">✕</button>
+    <div class="auth-header-title">🔐 Welcome to DocMind AI</div>
+    <div class="auth-header-desc">Sign in with an account or use a 1-click demo role preset.</div>
+
+    <!-- 1-Click Demo Presets -->
+    <div class="demo-presets-title">⚡ 1-Click Demo Login</div>
+    <div class="demo-presets-grid">
+      <button class="demo-preset-btn" onclick="demoLogin('admin@docmind.ai','admin123')">
+        <span class="icon">👑</span>
+        <span class="title">Admin</span>
+        <span class="subtitle">Full Control</span>
+      </button>
+      <button class="demo-preset-btn" onclick="demoLogin('dev@docmind.ai','dev123')">
+        <span class="icon">💻</span>
+        <span class="title">Developer</span>
+        <span class="subtitle">Dev & Test</span>
+      </button>
+      <button class="demo-preset-btn" onclick="demoLogin('viewer@docmind.ai','viewer123')">
+        <span class="icon">👁️</span>
+        <span class="title">Viewer</span>
+        <span class="subtitle">Read Only</span>
+      </button>
+    </div>
+
+    <!-- Auth Tabs Nav -->
+    <div class="auth-tabs-nav">
+      <button class="auth-tab-nav-btn active" id="authTabBtnLogin" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab-nav-btn" id="authTabBtnRegister" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <div class="auth-error-msg" id="authErrorMsg"></div>
+    <div class="auth-success-msg" id="authSuccessMsg"></div>
+
+    <!-- SIGN IN FORM -->
+    <div class="auth-tab-content active" id="authTabLogin">
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="auth-form-group">
+          <label>EMAIL ADDRESS</label>
+          <input type="email" id="loginEmail" placeholder="e.g. admin@docmind.ai" required/>
+        </div>
+        <div class="auth-form-group">
+          <label>PASSWORD</label>
+          <div class="auth-input-wrapper">
+            <input type="password" id="loginPassword" placeholder="••••••••" required/>
+            <button type="button" class="auth-toggle-pwd" onclick="togglePwdVisibility('loginPassword')">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+          <span>Sign In</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-tab-content" id="authTabRegister">
+      <form onsubmit="handleRegisterSubmit(event)">
+        <div class="auth-form-group">
+          <label>FULL NAME</label>
+          <input type="text" id="regName" placeholder="e.g. Alex Vance" required/>
+        </div>
+        <div class="auth-form-group">
+          <label>EMAIL ADDRESS</label>
+          <input type="email" id="regEmail" placeholder="e.g. user@docmind.ai" required/>
+        </div>
+        <div class="auth-form-group">
+          <label>PASSWORD</label>
+          <div class="auth-input-wrapper">
+            <input type="password" id="regPassword" placeholder="••••••••" required/>
+            <button type="button" class="auth-toggle-pwd" onclick="togglePwdVisibility('regPassword')">👁️</button>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>ASSIGNED ROLE</label>
+          <select id="regRole">
+            <option value="DEVELOPER">💻 Developer (Chat, SDK Gen, Tester)</option>
+            <option value="ADMIN">👑 Administrator (Full System Access)</option>
+            <option value="VIEWER">👁️ Viewer (Read Only Q&A)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" id="regSubmitBtn">
+          <span>Create Account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = '/api';
+
+// ─── AUTH & RBAC STATE ───────────────────────────────────────────────────────
+let authToken    = localStorage.getItem('docmind_token') || '';
+let currentUser  = null;
+let userPerms    = null;
+
+// ─── APP STATE ────────────────────────────────────────────────────────────────
+let streamingEnabled    = true;
+let compareMode         = false;
+let compareApi1Val      = '';
+let compareApi2Val      = '';
+let chatMessages        = [];
+let conversationHistory = [];
+let currentLangFilter   = 'all';
+let isRecording         = false;
+let recognition         = null;
+let suggestTimer        = null;
+
+const SUGGESTIONS = {
+  auth:     ['How do I authenticate?','What auth methods are supported?','How to pass the Bearer token?','Explain the OAuth flow'],
+  error:    ['What does 401 mean?','How to handle rate limiting?','What are the retry strategies?','List common HTTP error codes'],
+  endpoint: ['What endpoints are available?','What is the base URL?','List all GET endpoints','What parameters does the API take?'],
+  param:    ['What parameters are required?','What is the response format?','What is the request body schema?','Show required headers'],
+  limit:    ['What are the rate limits?','How many requests per minute?','Is there a free tier?','What is the quota limit?'],
+  example:  ['Show me an example request','Give me a curl example','Give a Python code snippet','Show sample JavaScript request'],
+  default:  ['What can this API do?','How do I get started?','What is the authentication method?','Show available endpoints'],
+};
+
+// ─── CENTRAL AUTH FETCH HELPER ───────────────────────────────────────────────
+async function authFetch(url, options = {}) {
+  const headers = options.headers ? { ...options.headers } : {};
+  if (authToken && !headers['Authorization']) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  const opts = { ...options, headers };
+  
+  const res = await fetch(url, opts);
+  if (res.status === 401) {
+    // Unauthorized -> Token expired or missing
+    currentUser = null;
+    authToken = '';
+    localStorage.removeItem('docmind_token');
+    updateAuthUI();
+    openAuthModal('login');
+    showToast('🔐 Please sign in to continue.');
+    throw new Error('Authentication required');
+  }
+  return res;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    document.querySelector('.theme-btn').textContent = '🌙 Dark';
+  }
+  document.getElementById('streamToggle').addEventListener('change', e => {
+    streamingEnabled = e.target.checked;
+    showToast(streamingEnabled ? '⚡ Streaming ON' : '📦 Streaming OFF');
+  });
+
+  initVoice();
+  await verifySession();
+});
+
+// ─── AUTH SESSION & VERIFICATION ──────────────────────────────────────────────
+async function verifySession() {
+  if (!authToken) {
+    updateAuthUI();
+    // Auto open modal on clean visit for easy 1-click test
+    openAuthModal('login');
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      currentUser = data.user;
+      userPerms   = data.permissions;
+      updateAuthUI();
+      loadApis();
+    } else {
+      currentUser = null;
+      authToken = '';
+      localStorage.removeItem('docmind_token');
+      updateAuthUI();
+      openAuthModal('login');
+    }
+  } catch (err) {
+    console.error('Session verify failed:', err);
+    updateAuthUI();
+  }
+}
+
+function updateAuthUI() {
+  const signInBtn = document.getElementById('headerSignInBtn');
+  const userPill  = document.getElementById('headerUserPill');
+  
+  if (currentUser) {
+    signInBtn.style.display = 'none';
+    userPill.style.display  = 'flex';
+    
+    const initial = (currentUser.name || currentUser.email || 'U')[0].toUpperCase();
+    document.getElementById('headerUserAvatar').textContent = initial;
+    document.getElementById('headerUserName').textContent   = currentUser.name || currentUser.email;
+    
+    const roleBadge = document.getElementById('headerRoleBadge');
+    roleBadge.className = `user-role-badge role-${currentUser.role}`;
+    roleBadge.textContent = currentUser.role === 'ADMIN' ? '👑 ADMIN' : currentUser.role === 'DEVELOPER' ? '💻 DEVELOPER' : '👁️ VIEWER';
+    
+    // Dropdown details
+    document.getElementById('dropUserName').textContent  = currentUser.name;
+    document.getElementById('dropUserEmail').textContent = currentUser.email;
+    
+    renderPermissionsDropdown(currentUser.role);
+    applyRbacRestrictions(currentUser.role);
+  } else {
+    signInBtn.style.display = 'flex';
+    userPill.style.display  = 'none';
+    document.getElementById('userDropdown').classList.remove('show');
+    applyRbacRestrictions(null);
+  }
+}
+
+function renderPermissionsDropdown(role) {
+  const permsEl = document.getElementById('dropUserPerms');
+  const isAdmin = role === 'ADMIN';
+  const isDev   = role === 'DEVELOPER' || isAdmin;
+  
+  permsEl.innerHTML = `
+    <span><span class="perm-ok">✓</span> AI Assistant & Chat Stream</span>
+    <span><span class="${isDev?'perm-ok':'perm-no'}">${isDev?'✓':'✗'}</span> SDK & README Studio</span>
+    <span><span class="${isDev?'perm-ok':'perm-no'}">${isDev?'✓':'✗'}</span> Live API Tester</span>
+    <span><span class="${isAdmin?'perm-ok':'perm-no'}">${isAdmin?'✓':'✗'}</span> Document Ingestion & Deletion</span>
+  `;
+}
+
+function applyRbacRestrictions(role) {
+  const isAdmin = role === 'ADMIN';
+  const isDev   = role === 'DEVELOPER' || isAdmin;
+
+  // 1. Upload Section
+  const uploadNotice = document.getElementById('uploadRbacNotice');
+  const dropzone     = document.getElementById('dropzone');
+  const uploadBtn    = document.getElementById('uploadBtn');
+  const autoDetect   = document.getElementById('autoDetectBtn');
+
+  if (uploadNotice) uploadNotice.style.display = isAdmin ? 'none' : 'flex';
+  if (dropzone)     dropzone.classList.toggle('disabled', !isAdmin);
+  if (uploadBtn)    uploadBtn.disabled = !isAdmin;
+  if (autoDetect)   autoDetect.disabled = !isAdmin;
+
+  // 2. Delete API
+  const deleteBtn = document.getElementById('deleteApiBtn');
+  if (deleteBtn) deleteBtn.disabled = !isAdmin;
+
+  // 3. Generator
+  const genNotice    = document.getElementById('genRbacNotice');
+  const genSdkBtn    = document.getElementById('genSdkBtn');
+  const genReadmeBtn = document.getElementById('genReadmeBtn');
+
+  if (genNotice)    genNotice.style.display = isDev ? 'none' : 'flex';
+  if (genSdkBtn)    genSdkBtn.disabled = !isDev;
+  if (genReadmeBtn) genReadmeBtn.disabled = !isDev;
+
+  // 4. Tester
+  const testNotice = document.getElementById('testerRbacNotice');
+  const testBtn    = document.getElementById('testBtn');
+
+  if (testNotice) testNotice.style.display = isDev ? 'none' : 'flex';
+  if (testBtn)    testBtn.disabled = !isDev;
+}
+
+// ─── AUTH MODAL ACTIONS ───────────────────────────────────────────────────────
+function openAuthModal(tab = 'login') {
+  document.getElementById('authModal').classList.add('show');
+  switchAuthTab(tab);
+  clearAuthAlerts();
+}
+
+function closeAuthModal() {
+  if (!currentUser) {
+    showToast('⚠️ Running in unauthenticated mode.');
+  }
+  document.getElementById('authModal').classList.remove('show');
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.auth-tab-content').forEach(c => c.classList.remove('active'));
+  
+  if (tab === 'login') {
+    document.getElementById('authTabBtnLogin').classList.add('active');
+    document.getElementById('authTabLogin').classList.add('active');
+  } else {
+    document.getElementById('authTabBtnRegister').classList.add('active');
+    document.getElementById('authTabRegister').classList.add('active');
+  }
+  clearAuthAlerts();
+}
+
+function clearAuthAlerts() {
+  const err = document.getElementById('authErrorMsg');
+  const suc = document.getElementById('authSuccessMsg');
+  err.style.display = 'none'; err.textContent = '';
+  suc.style.display = 'none'; suc.textContent = '';
+}
+
+function showAuthError(msg) {
+  const err = document.getElementById('authErrorMsg');
+  err.textContent = '❌ ' + msg; err.style.display = 'block';
+}
+
+function showAuthSuccess(msg) {
+  const suc = document.getElementById('authSuccessMsg');
+  suc.textContent = '✅ ' + msg; suc.style.display = 'block';
+}
+
+function togglePwdVisibility(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function toggleUserDropdown() {
+  document.getElementById('userDropdown').classList.toggle('show');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#userProfileWidget')) {
+    document.getElementById('userDropdown')?.classList.remove('show');
+  }
+});
+
+// ─── LOGIN & REGISTER SUBMISSIONS ────────────────────────────────────────────
+async function demoLogin(email, password) {
+  document.getElementById('loginEmail').value = email;
+  document.getElementById('loginPassword').value = password;
+  await performLogin(email, password);
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPassword').value;
+  await performLogin(email, pwd);
+}
+
+async function performLogin(email, password) {
+  clearAuthAlerts();
+  const btn = document.getElementById('loginSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Signing In...';
+
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      authToken   = data.access_token;
+      currentUser = data.user;
+      localStorage.setItem('docmind_token', authToken);
+      showAuthSuccess(`Welcome back, ${data.user.name}!`);
+      setTimeout(() => {
+        closeAuthModal();
+        updateAuthUI();
+        loadApis();
+        showToast(`👑 Logged in as ${data.user.role}: ${data.user.name}`);
+      }, 600);
+    } else {
+      showAuthError(data.detail || 'Login failed.');
+    }
+  } catch (err) {
+    showAuthError('Server unreachable: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Sign In</span>';
+  }
+}
+
+async function handleRegisterSubmit(e) {
+  e.preventDefault();
+  clearAuthAlerts();
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd   = document.getElementById('regPassword').value;
+  const role  = document.getElementById('regRole').value;
+  const btn   = document.getElementById('regSubmitBtn');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Creating Account...';
+
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pwd, role })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      authToken   = data.access_token;
+      currentUser = data.user;
+      localStorage.setItem('docmind_token', authToken);
+      showAuthSuccess(`Account created for ${data.user.name}!`);
+      setTimeout(() => {
+        closeAuthModal();
+        updateAuthUI();
+        loadApis();
+        showToast(`🎉 Welcome, ${data.user.name} (${data.user.role})!`);
+      }, 700);
+    } else {
+      showAuthError(data.detail || 'Registration failed.');
+    }
+  } catch (err) {
+    showAuthError('Server unreachable: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Create Account</span>';
+  }
+}
+
+async function logoutUser() {
+  try {
+    await fetch(`${API}/auth/logout`, { method: 'POST' });
+  } catch {}
+  authToken   = '';
+  currentUser = null;
+  userPerms   = null;
+  localStorage.removeItem('docmind_token');
+  updateAuthUI();
+  showToast('👋 You have been logged out.');
+  openAuthModal('login');
+}
+
+// ── Theme ─────────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const light = document.body.classList.contains('light');
+  document.querySelector('.theme-btn').textContent = light ? '🌙 Dark' : '🌙 Theme';
+  localStorage.setItem('theme', light ? 'light' : 'dark');
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  const tabs = ['upload','apis','generator','tester','history'];
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i] === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'history') renderHistory();
+}
+
+// ── Upload ────────────────────────────────────────────────────────────────────
+let selectedFiles = [];
+function onFilesSelected(input) { selectedFiles = Array.from(input.files); renderBadges(); }
+function renderBadges() {
+  document.getElementById('fileBadges').innerHTML =
+    selectedFiles.map(f => `<span class="file-badge">📎 ${f.name}</span>`).join('');
+}
+function onDragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+function onDragLeave()  { document.getElementById('dropzone').classList.remove('drag-over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag-over');
+  selectedFiles = Array.from(e.dataTransfer.files);
+  renderBadges();
+}
+
+async function uploadFiles() {
+  if (!currentUser || currentUser.role !== 'ADMIN') {
+    showToast('🔒 Admin role required to upload documentation');
+    return;
+  }
+  const apiName = document.getElementById('apiNameInput').value.trim();
+  const status  = document.getElementById('uploadStatus');
+  const btnText = document.getElementById('uploadBtnText');
+  if (!selectedFiles.length) return showStatus(status, 'error', 'Please select at least one file');
+  if (!apiName)              return showStatus(status, 'error', 'Please enter an API name');
+  let total = 0;
+  btnText.innerHTML = '<span class="spinner"></span> Processing...';
+  
+  for (let i = 0; i < selectedFiles.length; i++) {
+    const file = selectedFiles[i];
+    showStatus(status, 'loading', `Processing ${i+1}/${selectedFiles.length}: ${file.name}`);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('api_name', apiName);
+    try {
+      const res  = await authFetch(`${API}/upload`, { method:'POST', body:fd });
+      const data = await res.json();
+      if (res.ok) total += data.chunks_stored;
+      else showStatus(status, 'error', `✗ ${file.name}: ${data.detail}`);
+    } catch (e) {
+      showStatus(status, 'error', '✗ Upload error: ' + e.message);
+      btnText.innerHTML = '↑ Upload & Process';
+      return;
+    }
+  }
+  showStatus(status, 'success', `✓ ${total} chunks indexed for "${apiName}"`);
+  loadApis();
+  btnText.innerHTML = '↑ Upload & Process';
+}
+
+// ── Load APIs ─────────────────────────────────────────────────────────────────
+async function loadApis() {
+  try {
+    const res  = await fetch(`${API}/apis`);
+    const data = await res.json();
+    const apis = data.apis || [];
+    ['apiSelect','compareApi1','compareApi2'].forEach(id => {
+      const sel = document.getElementById(id);
+      const ph  = id==='apiSelect' ? '-- Select an API --' : id==='compareApi1' ? '-- Select API 1 --' : '-- Select API 2 --';
+      sel.innerHTML = `<option value="">${ph}</option>`;
+      apis.forEach(a => { const o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); });
+    });
+  } catch {}
+}
+
+function onApiChange() {
+  const v = document.getElementById('apiSelect').value;
+  document.getElementById('activeApiLabel').textContent = v || 'none selected';
+}
+
+// ── Lang Filter ───────────────────────────────────────────────────────────────
+function setLangFilter(lang, btn) {
+  currentLangFilter = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLangFilter();
+}
+function applyLangFilter() {
+  document.querySelectorAll('.code-block-wrapper').forEach(el => {
+    if (currentLangFilter === 'all') { el.style.display = ''; return; }
+    const tag = (el.dataset.lang||'').toLowerCase();
+    el.style.display = (tag.includes(currentLangFilter)) ? '' : 'none';
+  });
+}
+
+// ── Compare Mode ──────────────────────────────────────────────────────────────
+function startCompareMode() {
+  if (currentUser && currentUser.role === 'VIEWER') {
+    showToast('🔒 Developer or Admin role required for API comparison');
+    return;
+  }
+  const a1 = document.getElementById('compareApi1').value;
+  const a2 = document.getElementById('compareApi2').value;
+  if (!a1||!a2)   return showToast('❗ Please select both APIs');
+  if (a1===a2)    return showToast('❗ Select two different APIs');
+  compareMode=true; compareApi1Val=a1; compareApi2Val=a2;
+  document.getElementById('compareLabel').textContent = `${a1}  vs  ${a2}`;
+  document.getElementById('compareBanner').classList.add('show');
+  document.getElementById('activeApiLabel').textContent = `${a1} vs ${a2}`;
+  showToast('⚖️ Compare mode ON');
+}
+function stopCompareMode() {
+  compareMode=false; compareApi1Val=''; compareApi2Val='';
+  document.getElementById('compareBanner').classList.remove('show');
+  document.getElementById('activeApiLabel').textContent = document.getElementById('apiSelect').value || 'none selected';
+}
+
+// ── Send Question ─────────────────────────────────────────────────────────────
+async function sendQuestion() {
+  if (!currentUser) {
+    openAuthModal('login');
+    showToast('🔐 Please sign in to ask questions.');
+    return;
+  }
+  const q   = document.getElementById('questionInput').value.trim();
+  const api = document.getElementById('apiSelect').value;
+  if (!q) return;
+  if (!compareMode && !api) { showToast('❗ Please select an API from the APIs tab'); return; }
+
+  document.getElementById('emptyState')?.remove();
+  hideSuggestions();
+  appendMsg('user', q);
+  saveHistory(q);
+  conversationHistory.push({ role:'user', content:q });
+  document.getElementById('questionInput').value = '';
+  showTyping(true);
+  setSendLoading(true);
+
+  let answer = '';
+  if (compareMode) {
+    answer = await doCompare(q);
+  } else if (streamingEnabled) {
+    answer = await doStream(q, api);
+  } else {
+    answer = await doNormal(q, api);
+  }
+
+  conversationHistory.push({ role:'assistant', content: answer });
+  if (conversationHistory.length > 20) conversationHistory = conversationHistory.slice(-20);
+  showTyping(false);
+  setSendLoading(false);
+}
+
+async function doNormal(q, api) {
+  try {
+    const res  = await authFetch(`${API}/chat`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question:q, api_name:api, conversation_history:conversationHistory })
+    });
+    const data = await res.json();
+    showTyping(false);
+    const answer = data.answer || data.detail || 'Error occurred';
+    appendMsg('ai', answer, data.tokens_used);
+    return answer;
+  } catch (e) {
+    showTyping(false);
+    const msg = '✗ ' + e.message;
+    appendMsg('ai', msg);
+    return msg;
+  }
+}
+
+async function doStream(q, api) {
+  showTyping(false);
+  const msgEl = appendStreamingMsg();
+  let fullText = '';
+  try {
+    const res = await authFetch(`${API}/chat/stream`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question:q, api_name:api, conversation_history:conversationHistory })
+    });
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let   buf     = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const ev = JSON.parse(line.slice(6));
+          if (ev.error) { appendStreamText(msgEl, '\n\n❌ '+ev.error); break; }
+          if (!ev.done) { fullText += ev.text; appendStreamText(msgEl, ev.text); }
+          else { finalizeStreamMsg(msgEl, fullText); }
+        } catch {}
+      }
+    }
+  } catch (e) {
+    appendStreamText(msgEl, '✗ Network error: ' + e.message);
+  }
+  return fullText;
+}
+
+async function doCompare(q) {
+  try {
+    const res  = await authFetch(`${API}/compare`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question:q, api1:compareApi1Val, api2:compareApi2Val, conversation_history:conversationHistory })
+    });
+    const data = await res.json();
+    showTyping(false);
+    if (res.ok) {
+      appendCompareMsg(data.answer1, data.answer2, data.api1, data.api2);
+      return `[${data.api1}]: ${data.answer1}\n\n[${data.api2}]: ${data.answer2}`;
+    } else {
+      const msg = '✗ ' + (data.detail||'Compare failed');
+      appendMsg('ai', msg);
+      return msg;
+    }
+  } catch (e) {
+    showTyping(false);
+    const msg = '✗ ' + e.message;
+    appendMsg('ai', msg);
+    return msg;
+  }
+}
+
+// ── Message Rendering ─────────────────────────────────────────────────────────
+function appendMsg(role, text, tokens) {
+  const messages = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = `msg ${role}`;
+  const av = document.createElement('div');
+  av.className = `avatar ${role==='ai'?'ai':'usr'}`;
+  av.textContent = role==='ai' ? '⚡' : '👤';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.innerHTML = formatText(text);
+  if (tokens) {
+    const t = document.createElement('span');
+    t.className='tokens-badge'; t.textContent=`${tokens} tokens`;
+    bub.appendChild(t);
+  }
+  if (role==='ai') bub.appendChild(makeBubbleActions());
+  msg.appendChild(av); msg.appendChild(bub);
+  messages.appendChild(msg);
+  applyLangFilter(); scrollBottom();
+  chatMessages.push({ role, content:text, tokens, timestamp: nowStr() });
+  return msg;
+}
+
+function appendStreamingMsg() {
+  const messages = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = 'msg ai';
+  const av = document.createElement('div');
+  av.className = 'avatar ai'; av.textContent = '⚡';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.dataset.raw = '';
+  msg.appendChild(av); msg.appendChild(bub);
+  messages.appendChild(msg);
+  scrollBottom();
+  return bub;
+}
+
+function appendStreamText(bubEl, chunk) {
+  bubEl.dataset.raw += chunk;
+  bubEl.innerHTML = formatText(bubEl.dataset.raw);
+  applyLangFilter();
+  scrollBottom();
+}
+
+function finalizeStreamMsg(bubEl, fullText) {
+  bubEl.appendChild(makeBubbleActions());
+  chatMessages.push({ role:'assistant', content:fullText, timestamp: nowStr() });
+}
+
+function appendCompareMsg(ans1, ans2, api1, api2) {
+  const messages = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = 'msg ai';
+  const av = document.createElement('div');
+  av.className = 'avatar ai'; av.textContent = '⚖️';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.style.maxWidth = '85%';
+  bub.innerHTML = `
+    <div class="compare-section">
+      <div class="compare-section-title">📌 ${api1}</div>
+      <div>${formatText(ans1)}</div>
+    </div>
+    <hr class="compare-divider"/>
+    <div class="compare-section">
+      <div class="compare-section-title">📌 ${api2}</div>
+      <div>${formatText(ans2)}</div>
+    </div>
+  `;
+  bub.appendChild(makeBubbleActions());
+  msg.appendChild(av); msg.appendChild(bub);
+  messages.appendChild(msg);
+  applyLangFilter(); scrollBottom();
+  chatMessages.push({ role:'assistant', content:`[${api1}]:\n${ans1}\n\n[${api2}]:\n${ans2}`, timestamp: nowStr() });
+}
+
+function makeBubbleActions() {
+  const div = document.createElement('div');
+  div.className = 'bubble-actions';
+  div.innerHTML = `
+    <button class="action-btn" onclick="copyBubble(this)">📋 Copy</button>
+    <button class="action-btn" onclick="feedback(this,'up')">👍</button>
+    <button class="action-btn" onclick="feedback(this,'down')">👎</button>
+  `;
+  return div;
+}
+
+// ── Format Text ───────────────────────────────────────────────────────────────
+function formatText(text) {
+  if (!text) return '';
+  text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const l = lang || 'code';
+    return `<div class="code-block-wrapper" data-lang="${l.toLowerCase()}">
+      <span class="lang-tag">${l}</span>
+      <button class="copy-code-btn" onclick="copyCode(this)">Copy</button>
+      <pre>${escHtml(code.trim())}</pre>
+    </div>`;
+  });
+  text = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  text = text.replace(/`([^`]+)`/g,'<code>$1</code>');
+  text = text.replace(/\n/g,'<br/>');
+  return text;
+}
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Copy ──────────────────────────────────────────────────────────────────────
+function copyCode(btn) {
+  navigator.clipboard.writeText(btn.nextElementSibling.textContent).then(() => {
+    btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',2000);
+  });
+}
+function copyBubble(btn) {
+  const t = btn.closest('.bubble').innerText.replace(/📋 Copy|👍|👎|Copied!/g,'').trim();
+  navigator.clipboard.writeText(t).then(() => {
+    btn.textContent='✓ Copied'; setTimeout(()=>btn.textContent='📋 Copy',2000);
+  });
+}
+function feedback(btn, type) {
+  btn.parentElement.querySelectorAll('.action-btn').forEach(b=>b.classList.remove('liked','disliked'));
+  btn.classList.add(type==='up'?'liked':'disliked');
+}
+
+// ── Voice Input ───────────────────────────────────────────────────────────────
+function initVoice() {
+  const mic = document.getElementById('micBtn');
+  const SR  = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { mic.style.opacity='.4'; mic.title='Voice not supported in this browser'; return; }
+  recognition = new SR();
+  recognition.continuous      = false;
+  recognition.interimResults  = true;
+  recognition.maxAlternatives = 1;
+  recognition.lang = navigator.language || 'en-US';
+
+  recognition.onstart = () => { isRecording=true; mic.classList.add('recording'); showToast('🎤 Listening...'); };
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('questionInput').value = transcript;
+    onInputChange(transcript);
+  };
+  recognition.onend = () => { isRecording=false; mic.classList.remove('recording'); };
+  recognition.onerror = (e) => { isRecording=false; mic.classList.remove('recording'); showToast('🎤 Voice error: '+e.error); };
+}
+
+function toggleVoice() {
+  if (!recognition) { showToast('Voice recognition not supported'); return; }
+  isRecording ? recognition.stop() : recognition.start();
+}
+
+// ── Smart Suggestions ─────────────────────────────────────────────────────────
+function onInputKey(e) {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
+  if (e.key==='Escape') hideSuggestions();
+}
+
+function onInputChange(val) {
+  clearTimeout(suggestTimer);
+  if (!val || val.length < 2) { hideSuggestions(); return; }
+  suggestTimer = setTimeout(() => showSuggestions(getSuggestions(val)), 280);
+}
+
+function getSuggestions(text) {
+  const lower = text.toLowerCase();
+  let bank = SUGGESTIONS.default;
+  if (/auth|key|token|login|oauth|bearer/.test(lower)) bank = SUGGESTIONS.auth;
+  else if (/error|fail|4\d\d|5\d\d|status|retry/.test(lower)) bank = SUGGESTIONS.error;
+  else if (/endpoint|route|url|path|resource/.test(lower)) bank = SUGGESTIONS.endpoint;
+  else if (/param|body|header|format|response|request/.test(lower)) bank = SUGGESTIONS.param;
+  else if (/limit|rate|quota|tier|free|plan/.test(lower)) bank = SUGGESTIONS.limit;
+  else if (/example|sample|curl|code|demo|show/.test(lower)) bank = SUGGESTIONS.example;
+  return bank.filter(s => s.toLowerCase().includes(lower) || lower.length < 4).slice(0,5);
+}
+
+function showSuggestions(items) {
+  const box = document.getElementById('suggestions-box');
+  if (!items.length) { hideSuggestions(); return; }
+  box.innerHTML = items.map((s,i) =>
+    `<div class="suggestion-item" data-idx="${i}">
+      <span class="suggestion-icon">💭</span><span class="suggestion-text"></span>
+    </div>`
+  ).join('');
+  box.querySelectorAll('.suggestion-item').forEach((el, i) => {
+    el.querySelector('.suggestion-text').textContent = items[i];
+    el._suggestionText = items[i];
+  });
+  box.style.display = 'block';
+}
+
+function hideSuggestions() {
+  document.getElementById('suggestions-box').style.display = 'none';
+}
+
+function applySuggestion(text) {
+  document.getElementById('questionInput').value = text;
+  hideSuggestions();
+  document.getElementById('questionInput').focus();
+}
+
+document.addEventListener('click', e => {
+  const item = e.target.closest('.suggestion-item');
+  if (item && item._suggestionText) { applySuggestion(item._suggestionText); return; }
+  if (!e.target.closest('.input-wrap')) hideSuggestions();
+});
+
+// ── API Tester ────────────────────────────────────────────────────────────────
+async function runTest() {
+  if (currentUser && currentUser.role === 'VIEWER') {
+    showToast('🔒 Developer or Admin role required to run API requests');
+    return;
+  }
+  const url     = document.getElementById('testUrl').value.trim();
+  const method  = document.getElementById('testMethod').value;
+  const hRaw    = document.getElementById('testHeaders').value.trim();
+  const body    = document.getElementById('testBody').value.trim();
+  const result  = document.getElementById('testResult');
+  const btn     = document.getElementById('testBtn');
+  if (!url) { showToast('❗ Please enter an endpoint URL'); return; }
+  let headers = {};
+  if (hRaw) { try { headers=JSON.parse(hRaw); } catch { showToast('❗ Headers must be valid JSON'); return; } }
+  
+  btn.innerHTML = '<span class="spinner"></span> Running...';
+  btn.disabled  = true;
+  result.style.display = 'block';
+  result.textContent   = 'Sending request...';
+  try {
+    const res  = await authFetch(`${API}/test`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ url, method, headers, body:body||null })
+    });
+    const data = await res.json();
+    const color = data.success ? '#4ecca3' : '#ff5f57';
+    result.innerHTML = `<span style="color:${color};font-weight:bold">${data.success?'✅':'❌'} ${data.status_code}</span>  <span style="color:var(--muted)">${data.response_time_ms}ms</span>\n\n${JSON.stringify(data.body, null, 2)}`;
+  } catch (e) {
+    result.textContent = '❌ Error: ' + e.message;
+  }
+  btn.innerHTML = '▶ &nbsp;Run Request';
+  btn.disabled  = false;
+}
+
+// ── PDF Export ────────────────────────────────────────────────────────────────
+async function exportPDF() {
+  const apiName = document.getElementById('apiSelect').value;
+  if (!apiName) { showToast('❗ Please select an API'); return; }
+  if (!chatMessages.length) { showToast('❗ No chat messages to export'); return; }
+  showToast('⏳ Generating PDF report...');
+  try {
+    const res = await authFetch(`${API}/export-pdf`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ api_name:apiName, messages:chatMessages })
+    });
+    if (!res.ok) { const e=await res.json(); showToast('❌ '+e.detail); return; }
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = res.headers.get('Content-Disposition')?.match(/filename="?([^"]+)"?/)?.[1] || 'chat.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📕 PDF exported successfully!');
+  } catch (e) { showToast('❌ '+e.message); }
+}
+
+// ── Export MD / TXT ───────────────────────────────────────────────────────────
+function exportChat(fmt) {
+  if (!chatMessages.length) { showToast('❗ No chat messages to export'); return; }
+  let out = `# DocMind AI — QnA Chat Export\nDate: ${new Date().toLocaleString()}\nUser: ${currentUser?.name || 'Anonymous'}\n\n---\n\n`;
+  chatMessages.forEach(m => {
+    out += m.role==='user' ? `## 👤 You\n${m.content}\n\n` : `## ⚡ Assistant\n${m.content}\n\n---\n\n`;
+  });
+  const blob = new Blob([out], { type: fmt==='md' ? 'text/markdown' : 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `chat-export-${Date.now()}.${fmt}`;
+  a.click();
+}
+
+function clearChat() {
+  if (!confirm('Clear all conversation messages?')) return;
+  document.getElementById('messages').innerHTML =
+    `<div class="empty-state" id="emptyState"><div class="icon">⚡</div><p><strong>Upload or select an API doc</strong> on the left to start asking technical questions, generating SDKs, or testing endpoints!</p></div>`;
+  chatMessages = []; conversationHistory = [];
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+function saveHistory(q) {
+  let h = JSON.parse(localStorage.getItem('qna_history')||'[]');
+  h = [q, ...h.filter(x=>x!==q)].slice(0,30);
+  localStorage.setItem('qna_history', JSON.stringify(h));
+}
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const h    = JSON.parse(localStorage.getItem('qna_history')||'[]');
+  list.innerHTML = h.length
+    ? h.map((q,i)=>`<div class="history-item" data-hidx="${i}">🕐 <span></span></div>`).join('')
+    : '<p class="history-empty">No history yet</p>';
+  if (h.length) {
+    list.querySelectorAll('.history-item').forEach((el,i) => {
+      el.querySelector('span').textContent = h[i];
+      el._histText = h[i];
+      el.addEventListener('click', () => useHistory(el._histText));
+    });
+  }
+}
+function useHistory(q) {
+  document.getElementById('questionInput').value = q;
+  switchTab('upload'); document.getElementById('questionInput').focus();
+}
+function clearHistory() { localStorage.removeItem('qna_history'); renderHistory(); }
+
+// ── Auto Detect Name ──────────────────────────────────────────────────────────
+async function autoDetectName() {
+  if (!selectedFiles.length) { showToast('❗ Please select a file first'); return; }
+  const file = selectedFiles[0];
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await authFetch(`${API}/detect-name`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if (res.ok && data.detected_name) {
+      document.getElementById('apiNameInput').value = data.detected_name;
+      showToast(`✅ Name detected: "${data.detected_name}"`);
+    } else {
+      showToast('⚠️ Could not detect API name');
+    }
+  } catch {
+    showToast('❌ Auto-detect failed');
+  }
+}
+
+// ── Delete API ────────────────────────────────────────────────────────────────
+async function deleteSelectedApi() {
+  if (!currentUser || currentUser.role !== 'ADMIN') {
+    showToast('🔒 Admin role required to delete APIs');
+    return;
+  }
+  const api = document.getElementById('apiSelect').value;
+  if (!api) { showToast('❗ Please select an API to delete'); return; }
+  if (!confirm(`Delete API collection "${api}" from ChromaDB?`)) return;
+  try {
+    const res = await authFetch(`${API}/apis/${encodeURIComponent(api)}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(`✅ API "${api}" deleted`);
+      loadApis();
+      document.getElementById('activeApiLabel').textContent = 'none selected';
+    } else {
+      showToast(`❌ ${data.detail || 'Delete failed'}`);
+    }
+  } catch (e) {
+    showToast('❌ Error: ' + e.message);
+  }
+}
+
+// ── SDK & README Generator ────────────────────────────────────────────────────
+let currentGeneratedSdkCode = '';
+let currentGeneratedSdkLang = '';
+let currentGeneratedReadme = '';
+
+async function generateSdk() {
+  if (currentUser && currentUser.role === 'VIEWER') {
+    showToast('🔒 Developer or Admin role required for SDK generation');
+    return;
+  }
+  const api = document.getElementById('apiSelect').value;
+  const lang = document.getElementById('genLang').value;
+  const output = document.getElementById('genOutput');
+  const btn = document.getElementById('genSdkBtn');
+  const dlBtn = document.getElementById('downloadSdkBtn');
+
+  if (!api) { showToast('❗ Please select an API from the APIs tab'); switchTab('apis'); return; }
+
+  btn.innerHTML = '<span class="spinner"></span> Generating SDK...';
+  btn.disabled = true;
+  output.style.display = 'block';
+  output.textContent = 'Generating complete SDK code from documentation...';
+
+  try {
+    const res = await authFetch(`${API}/generate-sdk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_name: api, language: lang })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      currentGeneratedSdkCode = data.code;
+      currentGeneratedSdkLang = data.language || lang;
+      output.textContent = data.code;
+      dlBtn.style.display = 'block';
+      showToast(`✅ SDK generated (${data.tokens_used} tokens)`);
+    } else {
+      output.textContent = '❌ ' + (data.detail || 'Generation failed');
+    }
+  } catch (e) {
+    output.textContent = '❌ Network error: ' + e.message;
+  }
+  btn.innerHTML = '⚡ &nbsp;Generate SDK';
+  btn.disabled = false;
+}
+
+async function downloadSdk() {
+  const api = document.getElementById('apiSelect').value;
+  if (!currentGeneratedSdkCode) { showToast('❗ Please generate an SDK first'); return; }
+  try {
+    const res = await authFetch(`${API}/download-sdk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_name: api,
+        language: currentGeneratedSdkLang,
+        code: currentGeneratedSdkCode
+      })
+    });
+    if (!res.ok) { showToast('❌ Download failed'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = res.headers.get('Content-Disposition')?.match(/filename="?([^"]+)"?/)?.[1] || `${api}_sdk.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('💾 SDK downloaded!');
+  } catch (e) {
+    showToast('❌ Error: ' + e.message);
+  }
+}
+
+async function generateReadme() {
+  if (currentUser && currentUser.role === 'VIEWER') {
+    showToast('🔒 Developer or Admin role required for README generation');
+    return;
+  }
+  const api = document.getElementById('apiSelect').value;
+  const output = document.getElementById('genOutput');
+  const btn = document.getElementById('genReadmeBtn');
+  const dlBtn = document.getElementById('downloadReadmeBtn');
+
+  if (!api) { showToast('❗ Please select an API from the APIs tab'); switchTab('apis'); return; }
+
+  btn.innerHTML = '<span class="spinner"></span> Generating README...';
+  btn.disabled = true;
+  output.style.display = 'block';
+  output.textContent = 'Generating comprehensive README.md from API documentation...';
+
+  try {
+    const res = await authFetch(`${API}/generate-readme`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_name: api })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      currentGeneratedReadme = data.readme;
+      output.textContent = data.readme;
+      dlBtn.style.display = 'block';
+      showToast(`📖 README generated (${data.tokens_used} tokens)`);
+    } else {
+      output.textContent = '❌ ' + (data.detail || 'README generation failed');
+    }
+  } catch (e) {
+    output.textContent = '❌ Network error: ' + e.message;
+  }
+  btn.innerHTML = '📖 &nbsp;Generate README.md';
+  btn.disabled = false;
+}
+
+async function downloadReadme() {
+  const api = document.getElementById('apiSelect').value;
+  if (!currentGeneratedReadme) { showToast('❗ Please generate a README first'); return; }
+  try {
+    const res = await authFetch(`${API}/download-readme`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_name: api,
+        readme: currentGeneratedReadme
+      })
+    });
+    if (!res.ok) { showToast('❌ Download failed'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = res.headers.get('Content-Disposition')?.match(/filename="?([^"]+)"?/)?.[1] || `${api}_README.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📖 README.md downloaded!');
+  } catch (e) {
+    showToast('❌ Error: ' + e.message);
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showTyping(show) { document.getElementById('typingIndicator').classList.toggle('show', show); }
+function scrollBottom()   { const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
+function nowStr()         { return new Date().toLocaleString('en-US',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+
+function setSendLoading(loading) {
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner"></span>'
+    : '<svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="white"/></svg>';
+}
+
+function showStatus(el, type, msg) {
+  el.className = `status-bar ${type}`; el.textContent = msg; el.style.display = 'block';
+  if (type!=='loading') setTimeout(()=>el.style.display='none', 4000);
+}
+
+function showToast(msg, ms=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.style.opacity='0', ms);
+}
+
+function useChip(text) {
+  const api = document.getElementById('apiSelect').value;
+  if (!api) { showToast('❗ Please select an API from the APIs tab'); switchTab('apis'); return; }
+  document.getElementById('questionInput').value = text;
+  sendQuestion();
+}
+</script>
+</body>
+</html>
